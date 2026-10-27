@@ -1,36 +1,56 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# byNativo Guidelines
 
-## Getting Started
+Multi-brand brand guidelines platform (Standards-lite) built with **Next.js**, **Sanity Studio**, and **Vercel**.
 
-First, run the development server:
+Public sites live at `/b/[brand]/{logos,colors,typography}`. Editors use `/studio`.
+
+## Quick start
 
 ```bash
+cp .env.example .env.local
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Without a Sanity project ID, the app serves curated **seed data** for:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- [801 Brickell](http://localhost:4200/b/801) → use port from `next dev` (usually `3000`)
+- [Core Wynwood](/b/core-wynwood)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Connect Sanity
 
-## Learn More
+1. Create a project at [sanity.io/manage](https://www.sanity.io/manage)
+2. Put IDs/tokens in `.env.local` (see `.env.example`)
+3. Set `USE_SEED_FALLBACK=false`
+4. Run `npm run seed` with `SANITY_API_WRITE_TOKEN`
+5. Open `/studio`, upload real logo/font files onto the placeholder `assetFile` docs
 
-To learn more about Next.js, take a look at the following resources:
+## Share download email
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+`POST /api/share-download` with `{ "email", "assetId" }` sends a Resend email (rate-limited). In development without `RESEND_API_KEY`, it dry-runs and logs.
 
 ## Deploy on Vercel
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1. Import this repo in Vercel (Framework Preset: Next.js).
+2. Add environment variables from `.env.example` (Production + Preview).
+3. Set Sanity CORS origins to your Vercel URL + custom domain.
+4. Create a Sanity webhook → `https://YOUR_DOMAIN/api/revalidate` with secret `SANITY_REVALIDATE_SECRET` (projection can include `_type` and `slug`).
+5. Attach custom domain `guidelines.bynativo.com` when ready.
+6. Optional: install Sanity from the Vercel Marketplace to wire project env automatically.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Suggested Vercel env
+
+| Name | Notes |
+| --- | --- |
+| `NEXT_PUBLIC_SANITY_PROJECT_ID` | Required in prod |
+| `NEXT_PUBLIC_SANITY_DATASET` | `production` |
+| `SANITY_API_READ_TOKEN` | Viewer token for drafts/private if needed |
+| `SANITY_REVALIDATE_SECRET` | Webhook secret |
+| `RESEND_API_KEY` / `RESEND_FROM` | Share-download |
+| `USE_SEED_FALLBACK` | `false` in production once seeded |
+
+## Scripts
+
+- `npm run dev` — local app + Studio
+- `npm run build` — production build
+- `npm run seed` — upsert 801 + Core Wynwood into Sanity
