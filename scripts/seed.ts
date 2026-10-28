@@ -2,15 +2,28 @@
  * Seeds 801 Brickell + Core Wynwood into Sanity.
  *
  * Usage:
- *   SANITY_API_WRITE_TOKEN=... NEXT_PUBLIC_SANITY_PROJECT_ID=... npm run seed
+ *   npm run seed
+ *
+ * Reads NEXT_PUBLIC_SANITY_PROJECT_ID and SANITY_API_WRITE_TOKEN from
+ * .env.local, then .env.
  *
  * Requires a write token with create/update permissions.
  * Binary assets are referenced as placeholders — upload real files in Studio.
  */
 
+import { existsSync } from "node:fs";
+import { resolve } from "node:path";
+
 import { createClient } from "@sanity/client";
 
 import { seedBundles } from "../src/data/seed-brands";
+
+// Next loads these for `next dev`; tsx does not. Higher-priority file first
+// because loadEnvFile does not override variables already set.
+for (const file of [".env.local", ".env"]) {
+  const path = resolve(process.cwd(), file);
+  if (existsSync(path)) process.loadEnvFile(path);
+}
 
 const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID;
 const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET || "production";
@@ -122,11 +135,28 @@ async function seedBrandBundle(
     intro: bundle.colors.intro,
     secondaryTitle: bundle.colors.secondaryTitle,
     secondaryIntro: bundle.colors.secondaryIntro,
-    swatches: (bundle.colors.swatches || []).map((s, i) => ({
-      _type: "swatch",
-      _key: `swatch-${i}-${s.name}`.toLowerCase().replace(/\s+/g, "-"),
-      ...s,
-    })),
+    swatches: (bundle.colors.swatches || [])
+      .filter((s) => s.group !== "secondary")
+      .map((s, i) => ({
+        _type: "swatch",
+        _key: `swatch-${i}-${s.name}`.toLowerCase().replace(/\s+/g, "-"),
+        name: s.name,
+        hex: s.hex,
+        rgb: s.rgb,
+        cmyk: s.cmyk,
+        pms: s.pms,
+      })),
+    secondarySwatches: (bundle.colors.swatches || [])
+      .filter((s) => s.group === "secondary")
+      .map((s, i) => ({
+        _type: "swatch",
+        _key: `secondary-${i}-${s.name}`.toLowerCase().replace(/\s+/g, "-"),
+        name: s.name,
+        hex: s.hex,
+        rgb: s.rgb,
+        cmyk: s.cmyk,
+        pms: s.pms,
+      })),
   });
 
   await upsert({

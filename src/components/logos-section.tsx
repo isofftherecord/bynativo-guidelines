@@ -3,6 +3,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
 
+import { GuideHero, GuideNoteHead } from "@/components/guide-hero";
 import {
   ShareLogoModal,
   type ShareTarget,
@@ -12,6 +13,22 @@ import {
   fileNameFromUrlOrTitle,
 } from "@/lib/download-blob";
 import type { DownloadAsset, LogosPage, LogoVariant } from "@/types/brand";
+
+function scalingSrc(url: string | null | undefined, width: number) {
+  if (!url) return undefined;
+  const lower = url.toLowerCase();
+  // Keep true vectors as-is; asking Sanity to resize SVG often rasterizes it.
+  if (lower.includes(".svg") || lower.includes("/files/")) return url;
+  try {
+    const next = new URL(url);
+    next.searchParams.set("w", String(Math.round(width * 2)));
+    next.searchParams.set("q", "100");
+    next.searchParams.set("fit", "max");
+    return next.toString();
+  } catch {
+    return url;
+  }
+}
 
 const formats = [
   {
@@ -43,33 +60,86 @@ const formats = [
 export function LogosSection({
   page,
   brandName,
+  heroMark,
+  heroKicker,
 }: {
   page: LogosPage;
   brandName?: string;
+  heroMark?: string;
+  heroKicker?: string;
 }) {
   const [shareTarget, setShareTarget] = useState<ShareTarget | null>(null);
 
   return (
-    <div className="section-stack">
-      <header className="section-hero">
-        <h1>{page.title || "Logos"}</h1>
-        {page.intro ? <p>{page.intro}</p> : null}
-      </header>
-      {(page.sets || []).map((set) => (
-        <LogoSetCarousel
-          key={set.title}
-          title={set.title}
-          description={set.description}
-          variants={set.variants || []}
-          onShare={(asset, formatLabel) =>
-            setShareTarget({
-              assetId: asset._id,
-              title: asset.title,
-              formatLabel,
-            })
-          }
-        />
-      ))}
+    <div className="guide-page">
+      <GuideHero
+        mark={heroMark}
+        kicker={heroKicker}
+        title={page.title || "Logos"}
+        statement={page.intro}
+      />
+      <div className="guide-page__body">
+        {(page.sets || []).map((set) => (
+          <LogoSetCarousel
+            key={set.title}
+            title={set.title}
+            description={set.description}
+            variants={set.variants || []}
+            onShare={(asset, formatLabel) =>
+              setShareTarget({
+                assetId: asset._id,
+                title: asset.title,
+                formatLabel,
+              })
+            }
+          />
+        ))}
+
+        {page.brandMarkLabel || page.brandMarkIntro || page.brandMarkImageUrl ? (
+          <section className="guide-note">
+            <GuideNoteHead
+              title={page.brandMarkLabel || "Brand Mark"}
+              intro={page.brandMarkIntro}
+            />
+            {page.brandMarkImageUrl ? (
+              <div
+                className="logo-mark guide-note__content"
+                style={{ background: page.brandMarkBackground || "#fff" }}
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={page.brandMarkImageUrl}
+                  alt={page.brandMarkLabel || "Brand mark"}
+                />
+              </div>
+            ) : null}
+          </section>
+        ) : null}
+
+        {page.scalingLabel || page.scalingIntro || page.scalingImageUrl ? (
+          <section className="guide-note">
+            <GuideNoteHead
+              title={page.scalingLabel || "Scaling"}
+              intro={page.scalingIntro}
+            />
+            {page.scalingImageUrl ? (
+              <div className="logo-scaling guide-note__content">
+                {[120, 260, 480].map((width) => (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    key={width}
+                    className="logo-scaling__item"
+                    src={scalingSrc(page.scalingImageUrl, width)}
+                    alt=""
+                    width={width}
+                    style={{ width }}
+                  />
+                ))}
+              </div>
+            ) : null}
+          </section>
+        ) : null}
+      </div>
       <ShareLogoModal
         open={Boolean(shareTarget)}
         target={shareTarget}
@@ -123,29 +193,35 @@ function LogoSetCarousel({
   }
 
   return (
-    <section className="logo-set">
-      <div className="logo-set__copy">
-        <h2>{title}</h2>
-        {description ? <p>{description}</p> : null}
-      </div>
+    <section className="guide-note logo-set">
+      <GuideNoteHead title={title} intro={description} />
 
-      <div className="logo-set__grid">
+      <div className="logo-set__grid guide-note__content">
         <div
           className="logo-stage"
           style={{ background: active.background || "#111" }}
         >
           <AnimatePresence mode="wait">
             <motion.div
-              key={`${title}-${index}`}
+              key={`${title}-${index}-${active.previewUrl || active.label || "variant"}`}
               className="logo-stage__panel"
               initial={{ opacity: 0, x: 24 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -24 }}
               transition={{ duration: 0.28 }}
             >
-              <span className="logo-stage__label">
-                {active.label || "Variant"}
-              </span>
+              {active.previewUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  className="logo-stage__image"
+                  src={active.previewUrl}
+                  alt={active.label || title}
+                />
+              ) : (
+                <span className="logo-stage__label">
+                  {active.label || "Variant"}
+                </span>
+              )}
             </motion.div>
           </AnimatePresence>
           <div className="logo-stage__controls">
@@ -241,7 +317,7 @@ function LogoSetCarousel({
               ? "Downloading…"
               : canDownload
                 ? "Download"
-                : "Download unavailable (seed)"}
+                : "Publish logo files in Studio to download"}
           </button>
           {selectedAsset && canDownload ? (
             <p className="logo-files__hint">

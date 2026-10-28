@@ -16,8 +16,13 @@ export default async function LogosPage({
   return (
     <>
       <BrandNav brandSlug={brand.slug} brandName={brand.name} active="logos" />
-      <main className="page-main">
-        <LogosSection page={page} brandName={brand.name} />
+      <main>
+        <LogosSection
+          page={page}
+          brandName={brand.name}
+          heroMark={brand.heroMark || brand.name.slice(0, 2).toUpperCase()}
+          heroKicker={brand.heroKicker}
+        />
       </main>
     </>
   );

@@ -3,6 +3,8 @@ export type BrandSummary = {
   name: string;
   slug: string;
   tagline?: string;
+  heroMark?: string;
+  heroKicker?: string;
   primaryColor?: string;
   accentColor?: string;
   backgroundColor?: string;
@@ -21,6 +23,7 @@ export type LogoVariant = {
   label?: string;
   background?: string;
   preview?: unknown;
+  previewUrl?: string | null;
   cmyk?: DownloadAsset | null;
   pms?: DownloadAsset | null;
   rgb?: DownloadAsset | null;
@@ -37,6 +40,13 @@ export type LogosPage = {
   title?: string;
   intro?: string;
   sets?: LogoSet[];
+  brandMarkLabel?: string;
+  brandMarkIntro?: string;
+  brandMarkImageUrl?: string | null;
+  brandMarkBackground?: string;
+  scalingLabel?: string;
+  scalingIntro?: string;
+  scalingImageUrl?: string | null;
 };
 
 export type ColorSwatch = {
@@ -48,9 +58,27 @@ export type ColorSwatch = {
   group?: "primary" | "secondary" | string;
 };
 
+export type ColorShare = {
+  hex: string;
+  percent: number;
+};
+
+export type ColorPair = {
+  outer: string;
+  inner: string;
+};
+
 export type ColorsPage = {
   title?: string;
   intro?: string;
+  heroTitle?: string;
+  statement?: string;
+  proportionLabel?: string;
+  proportionIntro?: string;
+  proportions?: ColorShare[];
+  combinationsLabel?: string;
+  combinationsIntro?: string;
+  combinations?: ColorPair[];
   secondaryTitle?: string;
   secondaryIntro?: string;
   swatches?: ColorSwatch[];

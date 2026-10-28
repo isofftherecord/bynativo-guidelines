@@ -6,6 +6,8 @@ export const brandsQuery = defineQuery(`
     name,
     "slug": slug.current,
     tagline,
+    heroMark,
+    heroKicker,
     primaryColor,
     accentColor,
     backgroundColor,
@@ -20,6 +22,8 @@ export const brandBySlugQuery = defineQuery(`
     name,
     "slug": slug.current,
     tagline,
+    heroMark,
+    heroKicker,
     primaryColor,
     accentColor,
     backgroundColor,
@@ -38,13 +42,20 @@ export const logosPageByBrandQuery = defineQuery(`
       variants[] {
         label,
         background,
-        preview,
+        "previewUrl": preview.asset->url,
         "cmyk": cmyk->{ _id, title, format, "url": coalesce(externalUrl, file.asset->url) },
         "pms": pms->{ _id, title, format, "url": coalesce(externalUrl, file.asset->url) },
         "rgb": rgb->{ _id, title, format, "url": coalesce(externalUrl, file.asset->url) },
         "png": png->{ _id, title, format, "url": coalesce(externalUrl, file.asset->url) }
       }
-    }
+    },
+    brandMarkLabel,
+    brandMarkIntro,
+    "brandMarkImageUrl": brandMarkImage.asset->url,
+    brandMarkBackground,
+    scalingLabel,
+    scalingIntro,
+    "scalingImageUrl": scalingImage.asset->url
   }
 `);
 
@@ -52,9 +63,23 @@ export const colorsPageByBrandQuery = defineQuery(`
   *[_type == "colorsPage" && brand->slug.current == $slug][0] {
     title,
     intro,
+    heroTitle,
+    statement,
+    proportionLabel,
+    proportionIntro,
+    proportions[] { hex, percent },
+    combinationsLabel,
+    combinationsIntro,
+    combinations[] { outer, inner },
     secondaryTitle,
     secondaryIntro,
-    swatches[] { name, hex, rgb, cmyk, pms, group }
+    "swatches": coalesce(swatches, [])[coalesce(group, "primary") != "secondary"]{
+      name, hex, rgb, cmyk, pms, "group": "primary"
+    } + coalesce(secondarySwatches, [])[]{
+      name, hex, rgb, cmyk, pms, "group": "secondary"
+    } + coalesce(swatches, [])[group == "secondary"]{
+      name, hex, rgb, cmyk, pms, "group": "secondary"
+    }
   }
 `);
 

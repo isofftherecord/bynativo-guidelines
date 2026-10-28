@@ -23,8 +23,12 @@ export default async function TypographyRoute({
         brandName={brand.name}
         active="typography"
       />
-      <main className="page-main">
-        <TypographySection page={page} />
+      <main>
+        <TypographySection
+          page={page}
+          heroMark={brand.heroMark || brand.name.slice(0, 2).toUpperCase()}
+          heroKicker={brand.heroKicker}
+        />
       </main>
     </>
   );

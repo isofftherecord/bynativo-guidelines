@@ -7,31 +7,20 @@ import { structureTool } from "sanity/structure";
 import { apiVersion, dataset, projectId } from "./src/sanity/env";
 import { schemaTypes } from "./src/sanity/schemaTypes";
 import { structure } from "./src/sanity/structure";
+import { brandTemplates } from "./src/sanity/templates";
 
-const shared = {
+export default defineConfig({
+  name: "default",
+  title: "byNativo Guidelines",
+  basePath: "/studio",
   projectId,
   dataset,
-  schema: { types: schemaTypes },
-  plugins: [structureTool({ structure }), visionTool({ defaultApiVersion: apiVersion })],
-};
-
-export default defineConfig([
-  {
-    ...shared,
-    name: "default",
-    title: "byNativo Guidelines",
-    basePath: "/studio",
+  schema: {
+    types: schemaTypes,
+    templates: (prev) => [...prev, ...brandTemplates],
   },
-  {
-    ...shared,
-    name: "801",
-    title: "801 Brickell",
-    basePath: "/studio/801",
-  },
-  {
-    ...shared,
-    name: "core-wynwood",
-    title: "Core Wynwood",
-    basePath: "/studio/core-wynwood",
-  },
-]);
+  plugins: [
+    structureTool({ structure, keepPanesOnCreate: true }),
+    visionTool({ defaultApiVersion: apiVersion }),
+  ],
+});

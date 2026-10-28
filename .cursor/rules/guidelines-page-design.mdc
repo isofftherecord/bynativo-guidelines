@@ -1,0 +1,22 @@
+---
+description: Brand guidelines page design system based on the Colors page
+alwaysApply: true
+---
+
+# Guidelines page design
+
+The Colors page is the design base for Logos, Typography, and any new brand guideline pages.
+
+## Public site
+
+- Page shell: light gray ground (`#f3f3f3`), dark text, centered body max-width ~1120px.
+- Cover: full-bleed hero with brand accent color, top-left mark, top-right “Brand Guidelines”, huge page title, then a large statement under the cover.
+- Sections: orange accent label left + short intro right (`.guide-note__head` / `.color-note__head`), hairline top border. One job per section.
+- Reuse `GuideHero`, `GuideNoteHead`, and shared guide CSS. Do not invent a separate layout language per page.
+
+## Sanity Studio
+
+- Shared cover labels (`heroMark`, `heroKicker`) live in Brand **Settings**. Cover background uses Settings **Accent color** (`--brand-accent`) on every page. Page-specific cover fields (title, statement) stay on each page document.
+- Match public section order in the document fieldsets.
+- When a field picks a brand color (combinations, proportions, logo preview backgrounds, etc.), use the palette **select** (`PaletteColorInput`) from saved Primary/Secondary colors. Do not ask editors to retype HEX for those fields.
+- Defining colors (swatches, brand settings) still uses the hex picker.

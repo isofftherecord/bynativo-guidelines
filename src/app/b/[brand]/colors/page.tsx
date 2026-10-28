@@ -19,8 +19,12 @@ export default async function ColorsRoute({
   return (
     <>
       <BrandNav brandSlug={brand.slug} brandName={brand.name} active="colors" />
-      <main className="page-main">
-        <ColorsSection page={page} />
+      <main>
+        <ColorsSection
+          page={page}
+          heroMark={brand.heroMark || brand.name.slice(0, 2).toUpperCase()}
+          heroKicker={brand.heroKicker}
+        />
       </main>
     </>
   );

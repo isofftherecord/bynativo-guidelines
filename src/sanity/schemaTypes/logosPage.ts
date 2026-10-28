@@ -1,5 +1,7 @@
 import { defineArrayMember, defineField, defineType } from "sanity";
 
+import { PaletteColorInput } from "../components/palette-color-input";
+
 const logoVariant = defineArrayMember({
   type: "object",
   name: "logoVariant",
@@ -10,7 +12,8 @@ const logoVariant = defineArrayMember({
       name: "background",
       title: "Preview background",
       type: "string",
-      description: "Hex background for carousel preview",
+      description: "Choose a color already saved in the brand Colors page.",
+      components: { input: PaletteColorInput },
       initialValue: "#060000",
     }),
     defineField({
@@ -24,24 +27,28 @@ const logoVariant = defineArrayMember({
       title: "CMYK file",
       type: "reference",
       to: [{ type: "assetFile" }],
+      description: "Create files under Brand → Files so the brand is set automatically.",
     }),
     defineField({
       name: "pms",
       title: "PMS file",
       type: "reference",
       to: [{ type: "assetFile" }],
+      description: "Create files under Brand → Files so the brand is set automatically.",
     }),
     defineField({
       name: "rgb",
       title: "RGB file",
       type: "reference",
       to: [{ type: "assetFile" }],
+      description: "Create files under Brand → Files so the brand is set automatically.",
     }),
     defineField({
       name: "png",
       title: "PNG file",
       type: "reference",
       to: [{ type: "assetFile" }],
+      description: "Create files under Brand → Files so the brand is set automatically.",
     }),
   ],
   preview: {
@@ -77,26 +84,92 @@ export const logosPage = defineType({
   name: "logosPage",
   title: "Logos page",
   type: "document",
+  fieldsets: [
+    { name: "cover", title: "Cover", options: { collapsible: true } },
+    { name: "sets", title: "Logo sets" },
+    { name: "brandMark", title: "Brand Mark" },
+    { name: "scaling", title: "Scaling" },
+  ],
   fields: [
     defineField({
       name: "brand",
       title: "Brand",
       type: "reference",
       to: [{ type: "brand" }],
+      hidden: true,
       validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: "title",
       title: "Title",
       type: "string",
+      fieldset: "cover",
       initialValue: "Logos",
     }),
-    defineField({ name: "intro", title: "Intro", type: "text", rows: 4 }),
+    defineField({
+      name: "intro",
+      title: "Intro",
+      type: "text",
+      rows: 4,
+      fieldset: "cover",
+    }),
     defineField({
       name: "sets",
-      title: "Logo sets",
+      title: "Sets",
       type: "array",
+      fieldset: "sets",
       of: [logoSet],
+    }),
+    defineField({
+      name: "brandMarkLabel",
+      title: "Title",
+      type: "string",
+      fieldset: "brandMark",
+      initialValue: "Brand Mark",
+    }),
+    defineField({
+      name: "brandMarkIntro",
+      title: "Intro",
+      type: "text",
+      rows: 3,
+      fieldset: "brandMark",
+    }),
+    defineField({
+      name: "brandMarkImage",
+      title: "Image",
+      type: "image",
+      fieldset: "brandMark",
+      options: { hotspot: true },
+    }),
+    defineField({
+      name: "brandMarkBackground",
+      title: "Background",
+      type: "string",
+      fieldset: "brandMark",
+      components: { input: PaletteColorInput },
+      initialValue: "#FFFFFF",
+    }),
+    defineField({
+      name: "scalingLabel",
+      title: "Title",
+      type: "string",
+      fieldset: "scaling",
+      initialValue: "Scaling",
+    }),
+    defineField({
+      name: "scalingIntro",
+      title: "Intro",
+      type: "text",
+      rows: 4,
+      fieldset: "scaling",
+    }),
+    defineField({
+      name: "scalingImage",
+      title: "Image",
+      type: "image",
+      fieldset: "scaling",
+      description: "Shown at small, medium, and large sizes.",
+      options: { hotspot: true },
     }),
   ],
   preview: {

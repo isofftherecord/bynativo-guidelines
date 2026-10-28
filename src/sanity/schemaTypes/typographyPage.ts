@@ -95,6 +95,7 @@ export const typographyPage = defineType({
       title: "Brand",
       type: "reference",
       to: [{ type: "brand" }],
+      hidden: true,
       validation: (Rule) => Rule.required(),
     }),
     defineField({

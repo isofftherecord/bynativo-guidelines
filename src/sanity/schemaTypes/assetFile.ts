@@ -16,7 +16,10 @@ export const assetFile = defineType({
       title: "Brand",
       type: "reference",
       to: [{ type: "brand" }],
-      validation: (Rule) => Rule.required(),
+      description: "Required. If this appears empty, pick the brand before publishing.",
+      // Keep visible when empty so create-from-reference drafts can be fixed.
+      hidden: ({ value }) => Boolean(value),
+      validation: (Rule) => Rule.required().error("Choose the brand for this file"),
     }),
     defineField({
       name: "file",
