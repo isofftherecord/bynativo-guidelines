@@ -44,6 +44,7 @@ Without a Sanity project ID, the app serves curated **seed data** for:
 | --- | --- |
 | `NEXT_PUBLIC_SANITY_PROJECT_ID` | Required in prod |
 | `NEXT_PUBLIC_SANITY_DATASET` | `production` |
+| `NEXT_PUBLIC_SANITY_API_VERSION` | Date `YYYY-MM-DD` (e.g. `2025-01-01`). Invalid values fall back automatically |
 | `SANITY_API_READ_TOKEN` | Viewer token for drafts/private if needed |
 | `SANITY_REVALIDATE_SECRET` | Webhook secret |
 | `RESEND_API_KEY` / `RESEND_FROM` | Share-download |

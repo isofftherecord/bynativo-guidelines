@@ -1,5 +1,15 @@
-export const apiVersion =
-  process.env.NEXT_PUBLIC_SANITY_API_VERSION || "2025-01-01";
+const DEFAULT_API_VERSION = "2025-01-01";
+
+function resolveApiVersion(value: string | undefined) {
+  const trimmed = value?.trim();
+  if (trimmed === "1") return "1";
+  if (trimmed && /^\d{4}-\d{2}-\d{2}$/.test(trimmed)) return trimmed;
+  return DEFAULT_API_VERSION;
+}
+
+export const apiVersion = resolveApiVersion(
+  process.env.NEXT_PUBLIC_SANITY_API_VERSION,
+);
 
 export const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET || "production";
 
